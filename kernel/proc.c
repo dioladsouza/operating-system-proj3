@@ -549,7 +549,16 @@ void
 sleep(void *chan, struct spinlock *lk)
 {
   struct proc *p = myproc();
+
+  // printf("[DEBUG] Process %d going to sleep on channel %p\n", p->pid, chan);
   
+// Avoid recursive acquire:
+  if (holding(&p->lock)) {
+    // printf("[DEBUG] Process %d already holding lock, cannot acquire again\n", p->pid);
+    return;  // Avoid deadlock by not re-acquiring the lock
+  }
+
+
   // Must acquire p->lock in order to
   // change p->state and then call sched.
   // Once we hold p->lock, we can be
@@ -558,20 +567,30 @@ sleep(void *chan, struct spinlock *lk)
   // so it's okay to release lk.
 
   acquire(&p->lock);  //DOC: sleeplock1
+  // printf("[DEBUG] Process %d acquired p->lock, releasing given lock\n", p->pid);
+
   release(lk);
 
   // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
 
+
+  // printf("[DEBUG] Process %d state set to SLEEPING, chan set to %p\n", p->pid, p->chan);
+
   sched();
 
   // Tidy up.
   p->chan = 0;
 
+  // printf("[DEBUG] Process %d woke up, resetting chan to NULL\n", p->pid);
+
+
   // Reacquire original lock.
   release(&p->lock);
   acquire(lk);
+  // printf("[DEBUG] Process %d reacquired lock %p\n", p->pid, lk);
+
 }
 
 // Wake up all processes sleeping on chan.

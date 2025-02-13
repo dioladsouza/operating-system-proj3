@@ -1,1 +1,1 @@
-OBJS += proj3/kernel/sys_cpu_affinity.o xv6timer.o 
+OBJS += proj3/kernel/sys_cpu_affinity.o xv6timer.o periodic.o

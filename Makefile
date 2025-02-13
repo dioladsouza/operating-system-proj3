@@ -35,8 +35,9 @@ OBJS = \
   proj3/kernel/sys_cpu_affinity.o \
   proj3/kernel/xv6timer.o \
   proj3/kernel/getcpuid.o \
+  proj3/kernel/periodic.o \
 #   proj3/kernel/wait_until_next_period.o \
-  proj3/kernel/setperiod.o \
+#   proj3/kernel/setperiod.o \
 
 
 
@@ -152,6 +153,8 @@ UPROGS=\
 	$U/_zombie\
 	$U/_cpu_test\
 	$U/_timer_test\
+	$U/_test_periodic\
+
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

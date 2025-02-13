@@ -21,7 +21,7 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_set_cpu_affinity 22
-// #define SYS_setperiod  23
-// #define SYS_wait_until_next_period  24
+#define SYS_setperiod  23
+#define SYS_wait_until_next_period  24
 #define SYS_getcpuid  25
 

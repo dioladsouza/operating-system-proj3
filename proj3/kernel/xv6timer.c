@@ -1,11 +1,8 @@
-// #include "proj3/kernel/xv6timer.h"
-// #include "proj3/user/user.h"
-// #include "kernel/types.h"
-// #include "kernel/proc.h"  // Ensure proc.h is included here
-
 #include "proj3/kernel/xv6timer.h"
 #include "kernel/types.h"
 #include "kernel/proc.h"  // Ensure full struct proc definition
+#include "kernel/defs.h"  
+#include "kernel/spinlock.h"  
 
 extern uint ticks;
 
@@ -27,7 +24,11 @@ void xv6timer_register_callback(struct xv6timer_t *ptimer, void (*callback)(stru
 
 void xv6timer_interrupt(struct xv6timer_t *ptimer) {
     if (ptimer->callback && ticks >= ptimer->next_tick) {
-        ptimer->callback(ptimer); 
-        ptimer->next_tick = ticks + ptimer->expiry; // Reschedule the timer
+        printf("[DEBUG] Timer interrupt for process %d\n", ptimer->proc->pid);
+        
+        ptimer->callback(ptimer);  // ✅ Wake up the sleeping process
+        ptimer->next_tick = ticks + ptimer->expiry;  // Reschedule the timer
+
+        printf("[DEBUG] Process %d timer rescheduled to tick %d\n", ptimer->proc->pid, ptimer->next_tick);
     }
 }
