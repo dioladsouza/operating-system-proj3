@@ -34,9 +34,10 @@ OBJS = \
   $K/virtio_disk.o \
   proj3/kernel/sys_cpu_affinity.o \
   proj3/kernel/xv6timer.o \
-  proj3/kernel/setperiod.o \
-  proj3/kernel/wait_until_next_period.o \
   proj3/kernel/getcpuid.o \
+#   proj3/kernel/wait_until_next_period.o \
+  proj3/kernel/setperiod.o \
+
 
 
 

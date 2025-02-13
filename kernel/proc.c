@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "proj3/kernel/xv6timer.h"  // Ensure this is included after proc.h
 
 struct cpu cpus[NCPU];
 

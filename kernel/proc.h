@@ -1,4 +1,18 @@
-#include "proj3/kernel/xv6timer.h"
+#ifndef PROC_H
+#define PROC_H
+// #include "types.h"
+// #include "kernel/spinlock.h"
+// #include "kernel/param.h"
+// #include "proj3/kernel/xv6timer.h"  // Ensure this is included after types and spinlock
+
+#include "kernel/param.h"  // 🔥 Ensure param.h is included here
+#include "kernel/types.h"
+#include "kernel/spinlock.h"
+#include "kernel/riscv.h"
+#include "proj3/kernel/xv6timer.h"  // 🔥 Ensure this is included before using xv6timer_t
+
+
+struct xv6timer_t;  // Forward declaration
 
 // Saved registers for kernel context switches.
 struct context {
@@ -83,6 +97,9 @@ struct trapframe {
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+#include "proj3/kernel/xv6timer.h"
+
+
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -112,3 +129,6 @@ struct proc {
   // uint64 next_wakeup;   // Next wake-up time in ticks
   struct xv6timer_t timer;
 };
+
+
+#endif // PROC_H

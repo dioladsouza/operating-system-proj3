@@ -161,29 +161,55 @@ kerneltrap()
   w_sstatus(sstatus);
 }
 
-void
-clockintr()
+// void
+// clockintr()
+// {
+//   if(cpuid() == 0){
+//     acquire(&tickslock);
+//     ticks++;
+
+//     //struct proc *p;
+//     //for (p = proc; p < &proc[NPROC]; p++) {
+//     //    if (p->state == SLEEPING && p->period > 0 && ticks >= p->next_wakeup) {
+//     //        p->state = RUNNABLE;
+//     //    }
+//     //}
+
+//     wakeup(&ticks);
+//     release(&tickslock);
+//   }
+
+//   // ask for the next timer interrupt. this also clears
+//   // the interrupt request. 1000000 is about a tenth
+//   // of a second.
+//   w_stimecmp(r_time() + 1000000);
+// }
+
+extern struct proc proc[NPROC]; 
+
+void clockintr()
 {
-  if(cpuid() == 0){
-    acquire(&tickslock);
-    ticks++;
+    if(cpuid() == 0){
+        acquire(&tickslock);
+        ticks++;
+        wakeup(&ticks);
+        release(&tickslock);
+    }
 
-    //struct proc *p;
-    //for (p = proc; p < &proc[NPROC]; p++) {
-    //    if (p->state == SLEEPING && p->period > 0 && ticks >= p->next_wakeup) {
-    //        p->state = RUNNABLE;
-    //    }
-    //}
+    // Iterate over all processes and check their timers
+    struct proc *p;
+    for (p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+        if (p->state != UNUSED) {
+            xv6timer_interrupt(&p->timer); // Trigger custom timer interrupts
+        }
+        release(&p->lock);
+    }
 
-    wakeup(&ticks);
-    release(&tickslock);
-  }
-
-  // ask for the next timer interrupt. this also clears
-  // the interrupt request. 1000000 is about a tenth
-  // of a second.
-  w_stimecmp(r_time() + 1000000);
+    // Ask for the next timer interrupt (1000000 is about a tenth of a second)
+    w_stimecmp(r_time() + 1000000);
 }
+
 
 // check if it's an external interrupt or software interrupt,
 // and handle it.

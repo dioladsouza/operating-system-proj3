@@ -1,6 +1,11 @@
-//#include "proj3/kernel/xv6timer.h"
-#include "proj3/user/user.h"
+// #include "proj3/kernel/xv6timer.h"
+// #include "proj3/user/user.h"
+// #include "kernel/types.h"
+// #include "kernel/proc.h"  // Ensure proc.h is included here
+
+#include "proj3/kernel/xv6timer.h"
 #include "kernel/types.h"
+#include "kernel/proc.h"  // Ensure full struct proc definition
 
 extern uint ticks;
 
