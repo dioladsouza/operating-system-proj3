@@ -7,6 +7,10 @@
 #include "kernel/defs.h"
 #include "proj3/kernel/xv6timer.h"
 
+uint64 sys_getticks(void) {
+    return ticks;  // Simply return the current tick value
+}
+
 void timer_wakeup(struct xv6timer_t *timer) {
     printf("[DEBUG] Waking up process %d\n", timer->proc->pid);
     wakeup(timer->proc);  // ✅ Wake up the process
@@ -22,7 +26,7 @@ uint64 sys_setperiod(void) {
     struct proc *p = myproc();
 
     // Initialize and configure the process timer
-    printf("[DEBUG] Initializing timer for process %d with period %d\n", p->pid, period);
+    printf("\n[DEBUG] Initializing timer for process %d with period %d\n", p->pid, period);
     xv6timer_init(&p->timer, p);
     xv6timer_forward(&p->timer, period);
     xv6timer_register_callback(&p->timer, timer_wakeup);

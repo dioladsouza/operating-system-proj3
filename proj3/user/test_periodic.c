@@ -22,20 +22,16 @@
 // #include "kernel/stat.h"
 // #include "user/user.h"
 // #include "proj3/user/user.h"
-#include "proj3/kernel/xv6timer.h"
-
-// Declare ticks as an external variable
-extern uint ticks;  // Make sure this points to the global ticks variable in the kernel
 
 void periodic_task(int period) {
     setperiod(period);
 
-    // Print current time at the start of each task
+    // Run periodic task
     for (int i = 0; i < 3; i++) {  // Run a few iterations
         printf("Process %d executing task\n", getpid());
 
-        // Debugging: print current tick and next tick when forwarding
-        printf("xv6timer_forward: current tick %d, next tick set at %d\n", ticks, ticks + period);
+        // Print current tick and next tick with %p for uint64
+        printf("xv6timer_forward: current tick %ld, next tick set at %ld\n", getticks(), getticks() + period);
         wait_until_next_period();
     }
 
@@ -43,7 +39,8 @@ void periodic_task(int period) {
 }
 
 int main() {
-    periodic_task(5); // Use only one process and wake up every 5 ticks
+    periodic_task(10); 
+
 
     printf("Test complete\n");
     exit(0);

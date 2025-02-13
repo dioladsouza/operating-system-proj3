@@ -1,6 +1,8 @@
 int set_cpu_affinity(int cpu_mask);
 int setperiod(int period);
 void wait_until_next_period();
+uint64 getticks(void);
+
 /* 
 struct xv6timer_t;
 

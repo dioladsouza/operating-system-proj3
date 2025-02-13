@@ -105,6 +105,8 @@ extern uint64 sys_set_cpu_affinity(void);
 extern uint64 sys_setperiod(void);
 extern uint64 sys_wait_until_next_period(void);
 extern uint64 sys_getcpuid(void);
+extern uint64 sys_getticks(void); 
+
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -134,6 +136,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_setperiod] sys_setperiod,
 [SYS_wait_until_next_period] sys_wait_until_next_period,
 [SYS_getcpuid] sys_getcpuid,
+[SYS_getticks] sys_getticks,
+
 };
 
 void

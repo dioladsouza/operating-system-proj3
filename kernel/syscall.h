@@ -24,4 +24,5 @@
 #define SYS_setperiod  23
 #define SYS_wait_until_next_period  24
 #define SYS_getcpuid  25
+#define SYS_getticks 26
 
