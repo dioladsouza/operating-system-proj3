@@ -7,13 +7,20 @@
 #include "kernel/defs.h"
 #include "proj3/kernel/xv6timer.h"
 
+#define MAX_PERIODIC_TASKS 4
+
+static int periodic_task_count = 0;  // Track the number of periodic tasks
+
 uint64 sys_getticks(void) {
     return ticks;  // Simply return the current tick value
 }
 
 void timer_wakeup(struct xv6timer_t *timer) {
-    printf("[DEBUG] Waking up process %d\n", timer->proc->pid);
-    wakeup(timer->proc);  // ✅ Wake up the process
+    // printf("[DEBUG] Waking up process %d\n", timer->proc->pid);
+    wakeup(timer->proc);  // Wake up the process
+    // Decrement the periodic task counter after waking up
+    periodic_task_count--;
+    // printf("[DEBUG] Periodic task finished for process %d. Current count: %d\n", timer->proc->pid, periodic_task_count);
 }
 
 uint64 sys_setperiod(void) {
@@ -25,30 +32,32 @@ uint64 sys_setperiod(void) {
 
     struct proc *p = myproc();
 
+    // Check if there are already 4 periodic tasks
+    if (periodic_task_count >= MAX_PERIODIC_TASKS) {
+        // Reject the request if the limit is reached
+        printf("[DEBUG] Too many periodic tasks. Task limit reached.\n");
+        return -1;
+    }
+
     // Initialize and configure the process timer
     printf("\n[DEBUG] Initializing timer for process %d with period %d\n", p->pid, period);
     xv6timer_init(&p->timer, p);
     xv6timer_forward(&p->timer, period);
     xv6timer_register_callback(&p->timer, timer_wakeup);
 
+    // Increment the periodic task counter
+    periodic_task_count++;
+    printf("[DEBUG] Process %d added to periodic tasks. Current count: %d\n", p->pid, periodic_task_count);
+
     return 0;
 }
 
 uint64 sys_wait_until_next_period(void) {
     struct proc *p = myproc();
-    // printf("[DEBUG] Process %d waiting for next period\n", p->pid);
 
     acquire(&p->lock);  
-    // printf("[DEBUG] Process %d acquired lock\n", p->pid);
-
-    // printf("[DEBUG] Process %d going to sleep\n", p->pid);
-    sleep(&p->timer, &p->lock);  // ✅ sleep releases p->lock internally
-
-    // After sleep is called, the process is supposed to wake up when `wakeup` is triggered
-    // printf("[DEBUG] Process %d woke up\n", p->pid);
-
+    sleep(&p->timer, &p->lock);  // sleep releases p->lock internally
     release(&p->lock);  
-    // printf("[DEBUG] Process %d released lock\n", p->pid);
 
     return 0;
 }

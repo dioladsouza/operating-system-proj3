@@ -99,7 +99,6 @@ enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 #include "proj3/kernel/xv6timer.h"
 
-
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -124,11 +123,13 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  int cpu_mask; // Indicates which processor needs to be assigned by the scheduler to run the process/thread
-  // int period; // Period for periodic wake-up
-  // uint64 next_wakeup;   // Next wake-up time in ticks
-  struct xv6timer_t timer;
+  int cpu_mask;                // Indicates which processor needs to be assigned by the scheduler to run the process/thread
+  
+  // Periodic task fields:
+  int period;                  // Period for periodic wake-up
+  int is_periodic;             // Flag for periodic tasks
+  
+  struct xv6timer_t timer;     // Timer for periodic wake-up
 };
-
 
 #endif // PROC_H
