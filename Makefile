@@ -36,6 +36,8 @@ OBJS = \
   proj3/kernel/xv6timer.o \
   proj3/kernel/setperiod.o \
   proj3/kernel/wait_until_next_period.o \
+  proj3/kernel/getcpuid.o \
+
 
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-

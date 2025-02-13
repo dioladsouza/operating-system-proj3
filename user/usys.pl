@@ -37,6 +37,6 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("set_cpu_affinity");
-entry("setperiod");
+# entry("setperiod");
 entry("wait_until_next_period");
-
+entry("getcpuid");

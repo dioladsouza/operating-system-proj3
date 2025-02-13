@@ -1,3 +1,5 @@
+#include "proj3/kernel/xv6timer.h"
+
 // Saved registers for kernel context switches.
 struct context {
   uint64 ra;
@@ -106,7 +108,7 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   int cpu_mask; // Indicates which processor needs to be assigned by the scheduler to run the process/thread
-  int period; // Period for periodic wake-up
-  uint64 next_wakeup;   // Next wake-up time in ticks
+  // int period; // Period for periodic wake-up
+  // uint64 next_wakeup;   // Next wake-up time in ticks
   struct xv6timer_t timer;
 };

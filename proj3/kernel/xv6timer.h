@@ -1,3 +1,10 @@
+#ifndef _XV6TIMER_H_
+#define _XV6TIMER_H_
+
+
+
+
+
 #include "kernel/types.h"
 struct xv6timer_t;
 
@@ -14,3 +21,5 @@ void xv6timer_init(struct xv6timer_t *ptimer, struct proc *proc);
 void xv6timer_forward(struct xv6timer_t *ptimer, int expiry);
 void xv6timer_register_callback(struct xv6timer_t *ptimer, void (*callback)(struct xv6timer_t *));
 void xv6timer_interrupt(struct xv6timer_t *ptimer);
+
+#endif // _XV6TIMER_H_
