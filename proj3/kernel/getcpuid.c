@@ -1,11 +1,11 @@
 #include "../../kernel/types.h"
-#include "../../kernel/param.h"     // Defines NCPU
-#include "../../kernel/memlayout.h" // Required for memory layout definitions
-#include "../../kernel/riscv.h"     // For cpuid() function
-#include "../../kernel/spinlock.h"  // Required for struct spinlock
-#include "../../kernel/proc.h"      // Process management functions
-#include "../../kernel/defs.h"      // Function declarations
+#include "../../kernel/param.h"    
+#include "../../kernel/memlayout.h" 
+#include "../../kernel/riscv.h"     
+#include "../../kernel/spinlock.h" 
+#include "../../kernel/proc.h"      
+#include "../../kernel/defs.h"      
 
 uint64 sys_getcpuid(void) {
-    return cpuid();  // Use existing cpuid() function
+    return cpuid();  
 }

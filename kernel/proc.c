@@ -5,7 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
-#include "proj3/kernel/xv6timer.h"  // Ensure this is included after proc.h
+#include "proj3/kernel/xv6timer.h" 
 
 struct cpu cpus[NCPU];
 
@@ -435,129 +435,6 @@ wait(uint64 addr)
   }
 }
 
-// Per-CPU process scheduler.
-// Each CPU calls scheduler() after setting itself up.
-// Scheduler never returns.  It loops, doing:
-//  - choose a process to run.
-//  - swtch to start running that process.
-//  - eventually that process transfers control
-//    via swtch back to the scheduler.
-// void
-// scheduler(void)
-// {
-//   struct proc *p;
-//   struct cpu *c = mycpu();
-
-//   c->proc = 0;
-//   for(;;){
-//     // The most recent process to run may have had interrupts
-//     // turned off; enable them to avoid a deadlock if all
-//     // processes are waiting.
-//     intr_on();
-
-//     int found = 0;
-//     for(p = proc; p < &proc[NPROC]; p++) {
-//       acquire(&p->lock);
-//       if(p->state == RUNNABLE && (p->cpu_mask == -1 || p->cpu_mask == cpuid())) {
-//         // Switch to chosen process.  It is the process's job
-//         // to release its lock and then reacquire it
-//         // before jumping back to us.
-//         p->state = RUNNING;
-//         c->proc = p;
-//         swtch(&c->context, &p->context);
-
-//         // Process is done running for now.
-//         // It should have changed its p->state before coming back.
-//         c->proc = 0;
-//         found = 1;
-//       }
-//       release(&p->lock);
-//     }
-//     if(found == 0) {
-//       // nothing to run; stop running on this core until an interrupt.
-//       intr_on();
-//       asm volatile("wfi");
-//     }
-//   }
-// }
-
-
-// void scheduler(void)
-// {
-//   struct proc *p;
-//   struct cpu *c = mycpu();
-
-//   c->proc = 0;
-
-//   for(;;) {
-//     // The most recent process to run may have had interrupts
-//     // turned off; enable them to avoid a deadlock if all
-//     // processes are waiting.
-//     intr_on();
-
-//     int found = 0;
-//     struct proc *highest_priority_proc = 0;  // Track highest priority periodic task
-
-//     // First, look for periodic tasks (with smaller period being higher priority)
-//     for(p = proc; p < &proc[NPROC]; p++) {
-//       acquire(&p->lock);
-//       if(p->state == RUNNABLE && p->is_periodic) {
-//         // If this is the first periodic task or has higher priority
-//         if(!highest_priority_proc || p->period < highest_priority_proc->period) {
-//           highest_priority_proc = p;
-//         }
-//       }
-//       release(&p->lock);
-//     }
-
-//     // If we found a periodic task, run it
-//     if (highest_priority_proc) {
-//       p = highest_priority_proc;
-
-//       acquire(&p->lock);
-//       p->state = RUNNING;
-//       c->proc = p;
-
-//       // Switch to the chosen process
-//       swtch(&c->context, &p->context);
-
-//       // After the process finishes running, make sure its state is updated
-//       c->proc = 0;
-//       p->state = RUNNABLE;
-//       release(&p->lock);
-
-//       found = 1;
-//     } else {
-//       // If no periodic tasks, fall back to round-robin for normal tasks
-//       for(p = proc; p < &proc[NPROC]; p++) {
-//         acquire(&p->lock);
-//         if(p->state == RUNNABLE && !p->is_periodic) {
-//           // Regular task
-//           p->state = RUNNING;
-//           c->proc = p;
-
-//           // Switch to the chosen process
-//           swtch(&c->context, &p->context);
-
-//           // After the process finishes running, update its state
-//           c->proc = 0;
-//           p->state = RUNNABLE;
-//           release(&p->lock);
-//           found = 1;
-//         } else {
-//           release(&p->lock);
-//         }
-//       }
-//     }
-
-//     // If no runnable tasks are found, stop until there's something to run
-//     if(found == 0) {
-//       // nothing to run; stop running on this core until an interrupt.
-//       intr_on();
-//       asm volatile("wfi");
-//     }
-//   }
-// }
 
 void scheduler(void) {
     struct proc *p;
@@ -565,29 +442,23 @@ void scheduler(void) {
 
     c->proc = 0;
     for(;;){
-        // The most recent process to run may have had interrupts
-        // turned off; enable them to avoid a deadlock if all
-        // processes are waiting.
+        
         intr_on();
 
         int found = 0;
         for(p = proc; p < &proc[NPROC]; p++) {
             acquire(&p->lock);
             if(p->state == RUNNABLE && (p->cpu_mask == -1 || p->cpu_mask == cpuid())) {
-                // Switch to chosen process.
                 p->state = RUNNING;
                 c->proc = p;
-                // printf("[DEBUG] Scheduling process %d\n", p->pid);  // Debug line
                 swtch(&c->context, &p->context);
 
-                // Process is done running for now.
                 c->proc = 0;
                 found = 1;
             }
             release(&p->lock);
         }
         if(found == 0) {
-            // nothing to run; stop running on this core until an interrupt.
             intr_on();
             asm volatile("wfi");
         }
@@ -664,46 +535,31 @@ sleep(void *chan, struct spinlock *lk)
 {
   struct proc *p = myproc();
 
-  // printf("[DEBUG] Process %d going to sleep on channel %p\n", p->pid, chan);
   
-// Avoid recursive acquire:
   if (holding(&p->lock)) {
-    // printf("[DEBUG] Process %d already holding lock, cannot acquire again\n", p->pid);
-    return;  // Avoid deadlock by not re-acquiring the lock
+    return;  
   }
 
 
-  // Must acquire p->lock in order to
-  // change p->state and then call sched.
-  // Once we hold p->lock, we can be
-  // guaranteed that we won't miss any wakeup
-  // (wakeup locks p->lock),
-  // so it's okay to release lk.
+  
 
-  acquire(&p->lock);  //DOC: sleeplock1
-  // printf("[DEBUG] Process %d acquired p->lock, releasing given lock\n", p->pid);
+  acquire(&p->lock); 
 
   release(lk);
 
-  // Go to sleep.
   p->chan = chan;
   p->state = SLEEPING;
 
 
-  // printf("[DEBUG] Process %d state set to SLEEPING, chan set to %p\n", p->pid, p->chan);
 
   sched();
 
-  // Tidy up.
   p->chan = 0;
 
-  // printf("[DEBUG] Process %d woke up, resetting chan to NULL\n", p->pid);
 
 
-  // Reacquire original lock.
   release(&p->lock);
   acquire(lk);
-  // printf("[DEBUG] Process %d reacquired lock %p\n", p->pid, lk);
 
 }
 

@@ -9,7 +9,7 @@ int main() {
     int cpu_before = getcpuid();
     printf("Process started on CPU %d\n", cpu_before);
 
-    set_cpu_affinity(1 << 1);  // Pin to CPU 0
+    set_cpu_affinity(1 << 1);  
     sleep(10);  
 
     int cpu_after = getcpuid();

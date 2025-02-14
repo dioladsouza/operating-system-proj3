@@ -169,7 +169,7 @@ void clockintr() {
     if (cpuid() == 0) {
         acquire(&tickslock);
         ticks++;
-        wakeup(&ticks); // ✅ No need for lock
+        wakeup(&ticks); 
         release(&tickslock);
     }
 
@@ -178,13 +178,13 @@ void clockintr() {
         acquire(&p->lock); 
 
         if (p->state != UNUSED) {
-            xv6timer_interrupt(&p->timer);  // ✅ Keep the lock while calling this
+            xv6timer_interrupt(&p->timer); 
         }
 
-        release(&p->lock);  // 🔓 Release after function call
+        release(&p->lock);  
     }
 
-    w_stimecmp(r_time() + 1000000); // Schedule next timer interrupt
+    w_stimecmp(r_time() + 1000000); 
 }
 
 

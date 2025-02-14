@@ -15,7 +15,7 @@ int sys_set_cpu_affinity(void) {
     int cpu_mask;
     argint(0, &cpu_mask);
     if (cpu_mask < 0 || cpu_mask >= (1<< NCPU)) 
-        return -1; // Invalid
+        return -1; 
 
     struct proc *current_proc = myproc();
     current_proc->cpu_mask = cpu_mask; 

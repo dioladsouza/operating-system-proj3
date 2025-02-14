@@ -1,20 +1,19 @@
 #ifndef XV6TIMER_H
 #define XV6TIMER_H
 
-#include "kernel/types.h"  // Ensure basic types like uint are available
-// #include "kernel/proc.h"   // Ensure full struct proc definition before use
+#include "kernel/types.h"  
 
-struct proc;  // ✅ Forward declaration to avoid including proc.h
+struct proc;  
 
-struct xv6timer_t;  // Forward declaration (optional but safe)
+struct xv6timer_t;  
 
 typedef void (*xv6timer_callback_t)(struct xv6timer_t *);
 
 struct xv6timer_t {
-    int expiry;             // Number of ticks between interrupts
-    uint next_tick;         // Tick count when the timer should trigger next
-    struct proc *proc;      // Associated process
-    xv6timer_callback_t callback; // Callback function
+    int expiry;        
+    uint next_tick;        
+    struct proc *proc;     
+    xv6timer_callback_t callback; 
 };
 
 void xv6timer_init(struct xv6timer_t *ptimer, struct proc *proc);
